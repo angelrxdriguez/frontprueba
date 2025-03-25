@@ -76,7 +76,7 @@ $(document).ready(function () {
         });
     });
     $.ajax({
-        url: "https://backprueba-two.vercel.app/api/usuarios", // Reemplaza con la URL real de tu API
+        url: "https://backprueba-two.vercel.app/api/usuarios", 
         method: "GET",
         success: function(response) {
             if (response.success) {
