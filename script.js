@@ -75,6 +75,37 @@ $(document).ready(function () {
             }
         });
     });
+    $.ajax({
+        url: "https://tu-api.vercel.app/api/usuarios", // Reemplaza con la URL real de tu API
+        method: "GET",
+        success: function(response) {
+            if (response.success) {
+                let contenedor = $(".contenedor");
+                contenedor.empty(); // Vacía el contenedor antes de agregar los usuarios
+                
+                response.usuarios.forEach(usuario => {
+                    let usuarioHTML = `
+                        <div class="persona">
+                            <h3>${usuario.email}</h3>
+                            <button class="conectar-btn" data-user="${usuario._id}">Conectar</button>
+                        </div>
+                    `;
+                    contenedor.append(usuarioHTML);
+                });
+
+                // Evento para el botón de conectar
+                $(".conectar-btn").click(function() {
+                    let userId = $(this).data("user");
+                    window.location.href = `chatroom.html?user_id=${userId}`;
+                });
+            } else {
+                console.error("Error al obtener usuarios:", response.message);
+            }
+        },
+        error: function(err) {
+            console.error("Error en la petición AJAX:", err);
+        }
+    });
 });
 
 
