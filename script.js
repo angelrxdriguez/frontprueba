@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         console.log({ email, password });  // Verifica que los datos sean correctos
 
-        fetch("https://restaurante-back2-two.vercel.app/api/register", {
+        fetch("https://backprueba-two.vercel.app/api/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -50,7 +50,7 @@ $(document).ready(function () {
         }
     
         $.ajax({
-            url: "https://restaurante-back2-two.vercel.app/api/login",
+            url: "https://backprueba-two.vercel.app/api/login",
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify({ email, password }),
