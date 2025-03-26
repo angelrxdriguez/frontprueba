@@ -56,10 +56,13 @@ $(document).ready(function () {
             data: JSON.stringify({ email, password }),
             success: function (data) {
                 console.log(data); // Ver la respuesta en la consola
-    
+            
                 if (data.success) {
                     alert("Inicio de sesión exitoso. Redirigiendo...");
-                    //usuario admin !!!!
+            
+                    // Guardar el usuario en localStorage
+                    localStorage.setItem("usuarioLogueado", JSON.stringify({ email }));
+            
                     if (email === "admin@admin.admin" && password === "admin") {
                         window.location.href = "administrador.html";
                     } else {
@@ -81,22 +84,30 @@ $(document).ready(function () {
         success: function(response) {
             if (response.success) {
                 let contenedor = $(".contenedor");
-                contenedor.empty(); // Vacía el contenedor antes de agregar los usuarios
+                contenedor.empty(); 
                 
+                let usuarioLogueado = JSON.parse(localStorage.getItem("usuarioLogueado"));
+                if (!usuarioLogueado) {
+                    alert("Debes iniciar sesión para chatear.");
+                    return;
+                }
+    
                 response.usuarios.forEach(usuario => {
-                    let usuarioHTML = `
-                        <div class="persona">
-                            <h3>${usuario.email}</h3>
-                            <button class="conectar-btn" data-user="${usuario._id}">Conectar</button>
-                        </div>
-                    `;
-                    contenedor.append(usuarioHTML);
+                    if (usuario.email !== usuarioLogueado.email) { // Evita que se conecte consigo mismo
+                        let usuarioHTML = `
+                            <div class="persona">
+                                <h3>${usuario.email}</h3>
+                                <button class="conectar-btn" data-user="${usuario._id}">Conectar</button>
+                            </div>
+                        `;
+                        contenedor.append(usuarioHTML);
+                    }
                 });
-
+    
                 // Evento para el botón de conectar
                 $(".conectar-btn").click(function() {
                     let userId = $(this).data("user");
-                    window.location.href = `chatroom.html?user_id=${userId}`;
+                    window.location.href = `chatroom.html?user_id=${userId}&logged_user=${usuarioLogueado.email}`;
                 });
             } else {
                 console.error("Error al obtener usuarios:", response.message);
@@ -106,4 +117,5 @@ $(document).ready(function () {
             console.error("Error en la petición AJAX:", err);
         }
     });
+    
 });

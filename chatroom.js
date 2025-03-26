@@ -1,38 +1,42 @@
-const socket = io("https://backchat-production-604a.up.railway.app/");
+document.addEventListener("DOMContentLoaded", function () {
+  const params = new URLSearchParams(window.location.search);
+  const userId = params.get("user_id");
+  const loggedUser = JSON.parse(localStorage.getItem("usuarioLogueado")); // Obtener usuario logueado desde localStorage
 
-// Obtener el usuario en sesión (debe estar guardado en localStorage o en una cookie)
-const usuarioEnSesion = localStorage.getItem("usuario");
+  if (!userId || !loggedUser) {
+      alert("Error: No se han detectado usuarios válidos para el chat.");
+      return;
+  }
 
-// Obtener el ID del usuario con el que queremos chatear
-function getQueryParam(param) {
-    let params = new URLSearchParams(window.location.search);
-    return params.get(param);
-}
-let usuarioDestino = getQueryParam("user_id");
+  console.log("Usuario logueado:", loggedUser.email);
+  console.log("Usuario con el que chateará:", userId);
 
-if (!usuarioEnSesion || !usuarioDestino) {
-    alert("Error: No se han detectado usuarios válidos para el chat.");
-}
+  // Generar un chatRoomId único entre los dos usuarios
+  const chatRoomId = `${loggedUser.email}-${userId}`;
+  console.log("Sala de chat:", chatRoomId);
 
-// Crear una sala única basada en los dos IDs
-const chatRoomId = [usuarioEnSesion, usuarioDestino].sort().join("_");
+  // Conectar al socket y unirse a la sala
+  const socket = io("https://tu-servidor-sockets.com"); 
+  socket.emit("joinRoom", chatRoomId);
 
-// Unirse a la sala privada
-socket.emit("joinRoom", chatRoomId);
+  // Escuchar mensajes
+  socket.on("mensajePrivado", (mensaje) => {
+      console.log("Mensaje recibido:", mensaje);
+  });
 
-// Enviar mensaje
-document.getElementById("send").addEventListener("click", () => {
-    let message = document.getElementById("message").value;
-  
-    if (message.trim() !== "") {
-        socket.emit("mensajePrivado", { chatRoomId, userId: usuarioEnSesion, message });
-        document.getElementById("message").value = ""; // Limpiar input
-    }
-});
+  // Evento para enviar mensajes
+  document.getElementById("enviarMensaje").addEventListener("click", function () {
+      const mensaje = document.getElementById("mensajeInput").value;
+      if (mensaje.trim() !== "") {
+          socket.emit("mensajePrivado", { chatRoomId, mensaje, sender: loggedUser.email });
+          document.getElementById("mensajeInput").value = "";
+      }
+  });
 
-// Escuchar mensajes privados
-socket.on("mensajePrivado", (data) => {
-    let chatBox = document.getElementById("chat-box");
-    let mensajeHTML = `<p><strong>${data.userId}:</strong> ${data.message}</p>`;
-    chatBox.innerHTML += mensajeHTML;
+  // Mostrar los mensajes en la pantalla
+  socket.on("mensajePrivado", (data) => {
+      const chatBox = document.getElementById("chatBox");
+      const mensajeHTML = `<p><strong>${data.sender}:</strong> ${data.mensaje}</p>`;
+      chatBox.innerHTML += mensajeHTML;
+  });
 });
