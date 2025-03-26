@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   const params = new URLSearchParams(window.location.search);
   const userId = params.get("user_id");
-  const loggedUser = JSON.parse(localStorage.getItem("usuarioLogueado")); // Obtener usuario logueado desde localStorage
+  const loggedUser = JSON.parse(localStorage.getItem("usuarioLogueado")); // Obtener usuario logueado
 
   if (!userId || !loggedUser) {
       alert("Error: No se han detectado usuarios válidos para el chat.");
@@ -25,17 +25,17 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Evento para enviar mensajes
-  document.getElementById("enviarMensaje").addEventListener("click", function () {
-      const mensaje = document.getElementById("mensajeInput").value;
+  document.getElementById("send").addEventListener("click", function () {
+      const mensaje = document.getElementById("message").value;
       if (mensaje.trim() !== "") {
           socket.emit("mensajePrivado", { chatRoomId, mensaje, sender: loggedUser.email });
-          document.getElementById("mensajeInput").value = "";
+          document.getElementById("message").value = "";
       }
   });
 
   // Mostrar los mensajes en la pantalla
   socket.on("mensajePrivado", (data) => {
-      const chatBox = document.getElementById("chatBox");
+      const chatBox = document.getElementById("chat-box");
       const mensajeHTML = `<p><strong>${data.sender}:</strong> ${data.mensaje}</p>`;
       chatBox.innerHTML += mensajeHTML;
   });

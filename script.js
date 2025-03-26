@@ -43,26 +43,26 @@ $(document).ready(function () {
     $("#iniciarsesion").click(function () {
         const email = $("#login").val();
         const password = $("#contra").val();
-    
+
         if (!email || !password) {
             alert("Por favor, ingresa tu correo y contraseña.");
             return;
         }
-    
+
         $.ajax({
             url: "https://backprueba-two.vercel.app/api/login",
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify({ email, password }),
             success: function (data) {
-                console.log(data); // Ver la respuesta en la consola
-            
+                console.log(data);
+
                 if (data.success) {
                     alert("Inicio de sesión exitoso. Redirigiendo...");
-            
-                    // Guardar el usuario en localStorage
+
+                    // Guardar usuario en localStorage
                     localStorage.setItem("usuarioLogueado", JSON.stringify({ email }));
-            
+
                     if (email === "admin@admin.admin" && password === "admin") {
                         window.location.href = "administrador.html";
                     } else {
@@ -77,6 +77,7 @@ $(document).ready(function () {
                 alert("Hubo un problema con el inicio de sesión.");
             }
         });
+    });
     });
     $.ajax({
         url: "https://backprueba-two.vercel.app/api/usuarios", 
